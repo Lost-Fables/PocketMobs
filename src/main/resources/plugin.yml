@@ -1,0 +1,15 @@
+name: PocketMobs
+version: ${project.version}
+main: net.lordofthecraft.pocketmobs.PocketMobs
+api-version: 1.13
+depend: [CustomItem]
+softdepend: [Omniscience]
+authors: [501warhead]
+description: Store a pet in a pocket! Gotta catch 'em all
+website: https://lotc.co/
+
+commands:
+  givepokeball:
+    description: Gotta catch 'em all
+    permission: pocketmobs.mod
+    usage: /<command>
