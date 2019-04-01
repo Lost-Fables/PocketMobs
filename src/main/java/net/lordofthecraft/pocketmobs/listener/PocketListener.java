@@ -35,10 +35,12 @@ public class PocketListener implements Listener {
             if (CustomTag.hasCustomTag(e.getItem(), "pokeball")) {
                 if (CustomTag.hasCustomTag(e.getItem(), "entity")) {
                     shootNonemptyPokeball(pl, e.getItem());
-                    Objects.requireNonNull(pl.getEquipment()).setItemInMainHand(null);
+                    Objects.requireNonNull(pl.getEquipment()).setItemInMainHand(removeOneOrDelete(e.getItem()));
+                    e.setCancelled(true);
                 } else {
                     shootEmptyPokeball(pl);
-                    Objects.requireNonNull(pl.getEquipment()).setItemInMainHand(null);
+                    Objects.requireNonNull(pl.getEquipment()).setItemInMainHand(removeOneOrDelete(e.getItem()));
+                    e.setCancelled(true);
                 }
             }
         }
@@ -124,5 +126,13 @@ public class PocketListener implements Listener {
 
     private String getEntityName(Entity entity) {
         return entity.getCustomName() == null ? StringUtils.capitalize(entity.getType().name().toLowerCase()) : entity.getCustomName();
+    }
+
+    private ItemStack removeOneOrDelete(ItemStack itemstack) {
+        if (itemstack.getAmount() > 1) {
+            itemstack.setAmount(itemstack.getAmount() - 1);
+            return itemstack;
+        }
+        return null;
     }
 }
