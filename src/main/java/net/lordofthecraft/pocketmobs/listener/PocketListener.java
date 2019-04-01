@@ -18,10 +18,28 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class PocketListener implements Listener {
 
+    private static final List<EntityType> hostileEntities;
+
+    static {
+        hostileEntities = Arrays.asList(EntityType.ZOMBIE,
+                EntityType.SKELETON,
+                EntityType.STRAY,
+                EntityType.SPIDER,
+                EntityType.CAVE_SPIDER,
+                EntityType.BLAZE,
+                EntityType.GHAST,
+                EntityType.STRAY,
+                EntityType.CREEPER,
+                EntityType.GUARDIAN,
+                EntityType.HUSK,
+                EntityType.IRON_GOLEM);
+    }
     private final PocketMobs core;
 
     public PocketListener(PocketMobs core) {
@@ -65,7 +83,7 @@ public class PocketListener implements Listener {
 
             } else {
                 Entity hitEntity = e.getHitEntity();
-                if (hitEntity != null && hitEntity.isValid() && hitEntity instanceof Animals && e.getEntity().getShooter() != null && e.getEntity().getShooter() instanceof Player) {
+                if (hitEntity != null && hitEntity.isValid() && (hitEntity instanceof Animals || hostileEntities.contains(hitEntity.getType())) && e.getEntity().getShooter() != null && e.getEntity().getShooter() instanceof Player) {
                     if (hitEntity instanceof Tameable) {
                         Tameable tameable = (Tameable) hitEntity;
                         if (tameable.isTamed() && tameable.getOwnerUniqueId() == ((Player) e.getEntity().getShooter()).getUniqueId()) {
@@ -76,6 +94,8 @@ public class PocketListener implements Listener {
                                 shooter.sendMessage(ChatColor.LIGHT_PURPLE + "All right! " + ChatColor.AQUA + getEntityName(hitEntity) + ChatColor.LIGHT_PURPLE + " was caught!");
                             }
                             logCatch(hitEntity, shooter);
+                        } else {
+                            e.getEntity().getWorld().dropItemNaturally(e.getEntity().getLocation(), PocketMobs.getEmptyPokeball());
                         }
                     } else {
                         ItemStack pokeball = PocketMobs.getPokeballForEntity(hitEntity);
