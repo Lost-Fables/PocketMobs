@@ -1,5 +1,6 @@
 package net.lordofthecraft.pocketmobs.command;
 
+import net.lordofthecraft.pocketmobs.OrbHandler;
 import net.lordofthecraft.pocketmobs.PocketMobs;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -17,7 +18,7 @@ public class GivePokeballCommand implements CommandExecutor {
             return true;
         }
         Player player = (Player) sender;
-        player.getInventory().addItem(PocketMobs.getEmptyPokeball());
+        player.getInventory().addItem(OrbHandler.OrbGenerator(Integer.parseInt(args[0]), null));
         return true;
     }
 }

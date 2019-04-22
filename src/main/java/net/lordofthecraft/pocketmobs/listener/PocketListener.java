@@ -4,6 +4,7 @@ import io.github.archemedes.customitem.CustomTag;
 import net.lordofthecraft.omniscience.api.data.DataKeys;
 import net.lordofthecraft.omniscience.api.data.DataWrapper;
 import net.lordofthecraft.omniscience.api.entry.OEntry;
+import net.lordofthecraft.pocketmobs.OrbHandler;
 import net.lordofthecraft.pocketmobs.PocketMobs;
 import net.lordofthecraft.pocketmobs.reflection.EntityReflection;
 import org.apache.commons.lang.StringUtils;
@@ -78,7 +79,7 @@ public class PocketListener implements Listener {
                     Tameable tameable = (Tameable) entity;
                     tameable.setOwner(shooter);
                 }
-                e.getEntity().getWorld().dropItemNaturally(entity.getLocation(), PocketMobs.getEmptyPokeball());
+                e.getEntity().getWorld().dropItemNaturally(entity.getLocation(), OrbHandler.OrbGenerator(0, null));
                 logRelease(entity, shooter);
 
             } else {
@@ -87,7 +88,7 @@ public class PocketListener implements Listener {
                     if (hitEntity instanceof Tameable) {
                         Tameable tameable = (Tameable) hitEntity;
                         if (tameable.isTamed() && tameable.getOwnerUniqueId() == ((Player) e.getEntity().getShooter()).getUniqueId()) {
-                            ItemStack pokeball = PocketMobs.getPokeballForEntity(hitEntity);
+                            ItemStack pokeball = OrbHandler.OrbGenerator(0,hitEntity);
                             hitEntity.getWorld().dropItemNaturally(hitEntity.getLocation(), pokeball);
                             hitEntity.remove();
                             if (shooter != null) {
@@ -95,10 +96,10 @@ public class PocketListener implements Listener {
                             }
                             logCatch(hitEntity, shooter);
                         } else {
-                            e.getEntity().getWorld().dropItemNaturally(e.getEntity().getLocation(), PocketMobs.getEmptyPokeball());
+                            e.getEntity().getWorld().dropItemNaturally(e.getEntity().getLocation(), OrbHandler.OrbGenerator(0,null));
                         }
                     } else {
-                        ItemStack pokeball = PocketMobs.getPokeballForEntity(hitEntity);
+                        ItemStack pokeball = OrbHandler.OrbGenerator(0,hitEntity);
                         hitEntity.getWorld().dropItemNaturally(hitEntity.getLocation(), pokeball);
                         hitEntity.remove();
                         if (shooter != null) {
@@ -107,7 +108,7 @@ public class PocketListener implements Listener {
                         logCatch(hitEntity, shooter);
                     }
                 } else {
-                    e.getEntity().getWorld().dropItemNaturally(e.getEntity().getLocation(), PocketMobs.getEmptyPokeball());
+                    e.getEntity().getWorld().dropItemNaturally(e.getEntity().getLocation(), OrbHandler.OrbGenerator(0,null));
                 }
 
             }
