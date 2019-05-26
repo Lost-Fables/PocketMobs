@@ -67,27 +67,39 @@ public class PocketListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onProjectileHit(ProjectileHitEvent e) {
-        Player shooter = (Player) e.getEntity().getShooter();
-        if (e.getEntity().hasMetadata("pokeball")) {
-            if (e.getEntity().hasMetadata("entity")) {
+        if (e.getEntity().getShooter() instanceof Player) {
+            Player shooter = (Player) e.getEntity().getShooter();
+            if (e.getEntity().hasMetadata("pokeball")) {
+                if (e.getEntity().hasMetadata("entity")) {
 
-                String entityType = e.getEntity().getMetadata("entity_type").get(0).asString();
-                EntityType type = EntityType.valueOf(entityType);
-                final Entity entity = e.getEntity().getWorld().spawnEntity(e.getEntity().getLocation(), type);
-                EntityReflection.loadEntityFromNBT(entity, e.getEntity().getMetadata("entity").get(0).asString());
-                if (entity instanceof Tameable && shooter != null) {
-                    Tameable tameable = (Tameable) entity;
-                    tameable.setOwner(shooter);
-                }
-                e.getEntity().getWorld().dropItemNaturally(entity.getLocation(), PocketMobs.getEmptyPokeball());
-                logRelease(entity, shooter);
+                    String entityType = e.getEntity().getMetadata("entity_type").get(0).asString();
+                    EntityType type = EntityType.valueOf(entityType);
+                    final Entity entity = e.getEntity().getWorld().spawnEntity(e.getEntity().getLocation(), type);
+                    EntityReflection.loadEntityFromNBT(entity, e.getEntity().getMetadata("entity").get(0).asString());
+                    if (entity instanceof Tameable && shooter != null) {
+                        Tameable tameable = (Tameable) entity;
+                        tameable.setOwner(shooter);
+                    }
+                    e.getEntity().getWorld().dropItemNaturally(entity.getLocation(), PocketMobs.getEmptyPokeball());
+                    logRelease(entity, shooter);
 
-            } else {
-                Entity hitEntity = e.getHitEntity();
-                if (hitEntity != null && hitEntity.isValid() && (hitEntity instanceof Animals || hostileEntities.contains(hitEntity.getType())) && e.getEntity().getShooter() != null && e.getEntity().getShooter() instanceof Player) {
-                    if (hitEntity instanceof Tameable) {
-                        Tameable tameable = (Tameable) hitEntity;
-                        if (tameable.isTamed() && tameable.getOwnerUniqueId() == ((Player) e.getEntity().getShooter()).getUniqueId()) {
+                } else {
+                    Entity hitEntity = e.getHitEntity();
+                    if (hitEntity != null && hitEntity.isValid() && (hitEntity instanceof Animals || hostileEntities.contains(hitEntity.getType())) && e.getEntity().getShooter() != null && e.getEntity().getShooter() instanceof Player) {
+                        if (hitEntity instanceof Tameable) {
+                            Tameable tameable = (Tameable) hitEntity;
+                            if (tameable.isTamed() && tameable.getOwnerUniqueId() == ((Player) e.getEntity().getShooter()).getUniqueId()) {
+                                ItemStack pokeball = PocketMobs.getPokeballForEntity(hitEntity);
+                                hitEntity.getWorld().dropItemNaturally(hitEntity.getLocation(), pokeball);
+                                hitEntity.remove();
+                                if (shooter != null) {
+                                    shooter.sendMessage(ChatColor.LIGHT_PURPLE + "All right! " + ChatColor.AQUA + getEntityName(hitEntity) + ChatColor.LIGHT_PURPLE + " was caught!");
+                                }
+                                logCatch(hitEntity, shooter);
+                            } else {
+                                e.getEntity().getWorld().dropItemNaturally(e.getEntity().getLocation(), PocketMobs.getEmptyPokeball());
+                            }
+                        } else {
                             ItemStack pokeball = PocketMobs.getPokeballForEntity(hitEntity);
                             hitEntity.getWorld().dropItemNaturally(hitEntity.getLocation(), pokeball);
                             hitEntity.remove();
@@ -95,22 +107,12 @@ public class PocketListener implements Listener {
                                 shooter.sendMessage(ChatColor.LIGHT_PURPLE + "All right! " + ChatColor.AQUA + getEntityName(hitEntity) + ChatColor.LIGHT_PURPLE + " was caught!");
                             }
                             logCatch(hitEntity, shooter);
-                        } else {
-                            e.getEntity().getWorld().dropItemNaturally(e.getEntity().getLocation(), PocketMobs.getEmptyPokeball());
                         }
                     } else {
-                        ItemStack pokeball = PocketMobs.getPokeballForEntity(hitEntity);
-                        hitEntity.getWorld().dropItemNaturally(hitEntity.getLocation(), pokeball);
-                        hitEntity.remove();
-                        if (shooter != null) {
-                            shooter.sendMessage(ChatColor.LIGHT_PURPLE + "All right! " + ChatColor.AQUA + getEntityName(hitEntity) + ChatColor.LIGHT_PURPLE + " was caught!");
-                        }
-                        logCatch(hitEntity, shooter);
+                        e.getEntity().getWorld().dropItemNaturally(e.getEntity().getLocation(), PocketMobs.getEmptyPokeball());
                     }
-                } else {
-                    e.getEntity().getWorld().dropItemNaturally(e.getEntity().getLocation(), PocketMobs.getEmptyPokeball());
-                }
 
+                }
             }
         }
     }
