@@ -47,11 +47,11 @@ public class PocketListener implements Listener {
         this.core = core;
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler( priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent e) {
         Player pl = e.getPlayer();
         if (e.getHand() == EquipmentSlot.HAND) {
-            if (CustomTag.hasCustomTag(e.getItem(), "pokeball")) {
+            if (CustomTag.hasCustomTag(e.getItem(), "pokeball") && !CustomTag.hasCustomTag(e.getItem(), "soulbound")) {
                 if (CustomTag.hasCustomTag(e.getItem(), "entity")) {
                     shootNonemptyPokeball(pl, e.getItem());
                     Objects.requireNonNull(pl.getEquipment()).setItemInMainHand(removeOneOrDelete(e.getItem()));
